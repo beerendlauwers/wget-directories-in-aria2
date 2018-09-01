@@ -24,7 +24,7 @@ do
         directory="$(echo $path | grep -P '^.*[\\\/]' -o)"
 
 	# set the download directory
-        downloaddir="/media/hoard/to_move/$host/$directory"
+        downloaddir="/media/path/to/basedir/$host/$directory"
 
         echo "$URL: $line"
 
