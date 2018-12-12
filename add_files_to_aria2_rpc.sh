@@ -26,10 +26,18 @@ do
 	# set the download directory
         downloaddir="/media/path/to/basedir/$host/$directory"
 
-        echo "$URL: $line"
+        # get the filename without the querystring
+        filename="$(echo $(basename $path) | sed -e 's,\?.*$,,g')"
 
-	# Add the file to aria2.
-        curl http://localhost:6800/jsonrpc -H "Content-Type: application/json" -H "Accept: application/json" --data '{"jsonrpc": "2 .0","id":1,"method": "aria2.addUri", "params":["token:secret_token", ["'"$line"'"], {"dir":"'"$downloaddir"'","pause":"true", "http-user":"apache_user", "http-passwd":"apache_password"}]}'
-        echo "Downloading file to $downloaddir."
+        echo "URL: $line"
+        echo "FILENAME: $filename"
+        if [ -z "$filename" ] # This URL doesn't have a file name.
+        then
+            echo "URL does not have file name, skipping."
+        else
+	    # Add the file to aria2.
+            curl http://localhost:6800/jsonrpc -H "Content-Type: application/json" -H "Accept: application/json" --data '{"jsonrpc": "2 .0","id":1,"method": "aria2.addUri", "params":["token:secret_token", ["'"$line"'"], {"dir":"'"$downloaddir"'","pause":"true","continue":"true", "http-user":"apache_user", "http-passwd":"apache_password"}]}'
+            echo "Downloading file to $downloaddir."
+        fi
     fi
 done < "$filename"
